@@ -1,0 +1,44 @@
+{
+    "os": "Windows-10-10.0.22631-SP0",
+    "python": "3.10.8",
+    "heartbeatAt": "2024-03-11T03:51:11.918663",
+    "startedAt": "2024-03-11T03:51:10.674565",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "<python with no main file>",
+    "codePathLocal": null,
+    "git": {
+        "remote": "https://github.com/harshgupta1806/DL_A1.git",
+        "commit": "71ca493ae772fc30d1988e0c74e67baaa0c50457"
+    },
+    "email": "102404411+harshgupta1806@users.noreply.github.com",
+    "root": "D:/DeepLearning/DL-Assignment1",
+    "host": "DESKTOP-9GNUBH3",
+    "username": "DELL",
+    "executable": "c:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+    "cpu_count": 12,
+    "cpu_count_logical": 16,
+    "cpu_freq": {
+        "current": 1700.0,
+        "min": 0.0,
+        "max": 1700.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1700.0,
+            "min": 0.0,
+            "max": 1700.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 200.56542587280273,
+            "used": 6.7933502197265625
+        }
+    },
+    "memory": {
+        "total": 15.692127227783203
+    }
+}
