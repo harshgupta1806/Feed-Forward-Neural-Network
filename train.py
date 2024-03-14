@@ -667,7 +667,7 @@ def create_confusion_matrix(y_pred, y_true):
     return mat
 
 def plot_confusion_matrix(dataset):
-    # wandb.init(project="DL_Assignment1", name="Question:7")
+    wandb.init(project="DL_Assignment1", name="Question:7")
     class_label = ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"]
     if dataset == 'mnist':
         class_label = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -682,8 +682,8 @@ def plot_confusion_matrix(dataset):
     plt.ylabel("Predicted Class")
     plt.xlabel("True Class")
     plt.show()
-    # wandb.log({"Confusion_Matrix": wandb.Image(plt)})
-    # wandb.finish()
+    wandb.log({"Confusion_Matrix": wandb.Image(plt)})
+    wandb.finish()
 
 PARAM_NEURAL_NETWORK = {
     "hidden_layers": arguments.num_layers,
