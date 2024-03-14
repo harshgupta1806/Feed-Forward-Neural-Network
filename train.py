@@ -21,18 +21,20 @@ parser.add_argument('-b', '--batch_size', help="Batch size used to train neural 
 parser.add_argument('-l','--loss', help = 'choices: ["mean_squared_error", "cross_entropy"]' , type=str, default='cross_entropy', choices=["mean_squared_error", "cross_entropy"])
 parser.add_argument('-o', '--optimizer', help = 'choices: ["sgd", "momentum", "nag", "rmsprop", "adam", "nadam"]', type=str, default = 'nadam', choices= ["sgd", "momentum", "nag", "rmsprop", "adam", "nadam"])
 parser.add_argument('-lr', '--learning_rate', help = 'Learning rate used to optimize model parameters', type=float, default=0.0005)
-parser.add_argument('-m', '--momentum', help='Momentum used by momentum and nag optimizers.',type=float, default=0.5)
-parser.add_argument('-beta', '--beta', help='Beta used by rmsprop optimizer',type=float, default=0.5)
-parser.add_argument('-beta1', '--beta1', help='Beta1 used by adam and nadam optimizers.',type=float, default=0.999)
+parser.add_argument('-m', '--momentum', help='Momentum used by momentum and nag optimizers.',type=float, default=0.9)
+parser.add_argument('-beta', '--beta', help='Beta used by rmsprop optimizer',type=float, default=0.9)
+parser.add_argument('-beta1', '--beta1', help='Beta1 used by adam and nadam optimizers.',type=float, default=0.9)
 parser.add_argument('-beta2', '--beta2', help='Beta2 used by adam and nadam optimizers.',type=float, default=0.999)
-parser.add_argument('-eps', '--epsilon', help='Epsilon used by optimizers.',type=float, default=0.000001)
-parser.add_argument('-w_d', '--weight_decay', help='Weight decay used by optimizers.',type=float, default=0.0005)
+parser.add_argument('-eps', '--epsilon', help='Epsilon used by optimizers.',type=float, default=1e-8)
+parser.add_argument('-w_d', '--weight_decay', help='Weight decay used by optimizers.',type=float, default=0)
 parser.add_argument('-w_i', '--weight_init', help = 'choices: ["random", "Xavier"]', type=str, default='Xavier')
 parser.add_argument('-nhl', '--num_layers', help='Number of hidden layers used in feedforward neural network.',type=int, default=3)
-parser.add_argument('-sz', '--hidden_size', help ='Number of hidden neurons in a feedforward layer.', nargs='+', type=int, default=64, required=False)
-parser.add_argument('-a', '--activation', help='choices: ["sigmoid", "tanh", "ReLU", "identity"]', type=str, default='ReLU', choices=["identity", "sigmoid", "tanh", "ReLU"])
-parser.add_argument('-p', '--console', help='print training_accuracy + loss, validation_accuracy + loss for every epochs', choices=[0, 1], type=int, default=0)
-parser.add_argument('-w', '--wandb_log', help='log on wandb', choices=[0, 1], type=int, default=1)
+parser.add_argument('-sz', '--hidden_size', help ='Number of hidden neurons in a feedforward layer.', type=int, default=128)
+parser.add_argument('-a', '--activation', help='choices: ["sigmoid", "tanh", "ReLU", "identity"]', type=str, default='tanh', choices=["identity", "sigmoid", "tanh", "ReLU"])
+parser.add_argument('-p', '--console', help='print training_accuracy + loss, validation_accuracy + loss for every epochs', choices=[0, 1], type=int, default=1)
+parser.add_argument('-wl', '--wandb_log', help='log on wandb', choices=[0, 1], type=int, default=1)
+parser.add_argument('-dc', '--confusion_matrix', help='log confusion matrix on wandb', choices=[0, 1], type=int, default=0)
+# parser.add_argument('-oc', '--output_size', help ='Number of neurons in output layer used in feedforward neural network.', type = int, default = 10)
 arguments = parser.parse_args()
 wandb.init(project=  arguments.wandb_project, name = arguments.wandb_entity)
 
@@ -654,6 +656,32 @@ class Train_Model:
         return t_loss, t_acc, v_loss, v_acc
 
 
+def create_confusion_matrix(y_pred, y_true):
+    mat = np.zeros((y_pred.shape[1], y_pred.shape[1]))
+    class_pred = np.argmax(y_pred, axis = 1)
+    print(class_pred)
+    for i in range(y_true.shape[0]):
+        mat[y_true[i]][class_pred[i]] += 1
+    mat = mat.astype(int)
+    print(type(mat))
+    return mat
+
+def plot_confusion_matrix():
+    # wandb.init(project="DL_Assignment1", name="Question:7")
+    class_label = ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"]
+    mat = create_confusion_matrix(y_pred, model.neural_network.test_true)
+    df_confusion = pandas.DataFrame(mat, index=class_label, columns=class_label)
+    plt.figure(figsize=(10, 10))
+    # my_cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["red","yellow"])
+    ax = sns.heatmap(df_confusion, annot=True, fmt='g',linewidths=4, linecolor='white')
+    ax.set_xticklabels(class_label,rotation=90)
+    ax.set_yticklabels(class_label,rotation=0)
+    plt.title('Confusion Matrix', fontsize=8)
+    plt.ylabel("Predicted Class")
+    plt.xlabel("True Class")
+    wandb.log({"Confusion_Matrix": wandb.Image(plt)})
+    wandb.finish()
+
 PARAM_NEURAL_NETWORK = {
     "hidden_layers": arguments.num_layers,
     "hidden_layer_sizes" : arguments.hidden_size,
@@ -674,12 +702,23 @@ PARAM_OPTIMIZER = {
     "momentum" : arguments.momentum #0.5
 }
 
+
 nn = Neural_Network(PARAM_NEURAL_NETWORK)
 opt = Optimizer(nn, PARAM_OPTIMIZER)
 
 model = Train_Model(nn, opt, log=arguments.wandb_log, console=arguments.console)
 training_loss, training_acc, validation_loss, validation_acc = model.fit_data(batch_size=arguments.batch_size, epochs=arguments.epochs)
 # print(f"Training Accuracy :- {training_acc}, Training Loss :- {training_loss}\nValidation Accuracy :- {validation_acc}, Validation Loss :- {validation_loss}")
+
+if arguments.confusion_matrix == 1:
+    y_pred = model.predict_prob(model.neural_network.test_img)
+    # print(model.compute_performance(model.neural_network.test_img, model.neural_network.test_true))
+    create_confusion_matrix(y_pred, model.neural_network.test_true)
+    plot_confusion_matrix()
+
+
+
+
 test_loss, test_acc = model.compute_performance(model.neural_network.test_img, model.neural_network.test_true)
 print(f"Test Accuracy :: {test_acc}, Test Loss :: {test_loss}")
 wandb.finish()
