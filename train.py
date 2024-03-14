@@ -666,9 +666,11 @@ def create_confusion_matrix(y_pred, y_true):
     print(type(mat))
     return mat
 
-def plot_confusion_matrix():
+def plot_confusion_matrix(dataset):
     # wandb.init(project="DL_Assignment1", name="Question:7")
     class_label = ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"]
+    if dataset == 'mnist':
+        class_label = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
     mat = create_confusion_matrix(y_pred, model.neural_network.test_true)
     df_confusion = pandas.DataFrame(mat, index=class_label, columns=class_label)
     plt.figure(figsize=(10, 10))
@@ -679,8 +681,9 @@ def plot_confusion_matrix():
     plt.title('Confusion Matrix', fontsize=8)
     plt.ylabel("Predicted Class")
     plt.xlabel("True Class")
-    wandb.log({"Confusion_Matrix": wandb.Image(plt)})
-    wandb.finish()
+    plt.show()
+    # wandb.log({"Confusion_Matrix": wandb.Image(plt)})
+    # wandb.finish()
 
 PARAM_NEURAL_NETWORK = {
     "hidden_layers": arguments.num_layers,
@@ -714,7 +717,7 @@ if arguments.confusion_matrix == 1:
     y_pred = model.predict_prob(model.neural_network.test_img)
     # print(model.compute_performance(model.neural_network.test_img, model.neural_network.test_true))
     create_confusion_matrix(y_pred, model.neural_network.test_true)
-    plot_confusion_matrix()
+    plot_confusion_matrix(model.neural_network.dataset)
 
 
 
