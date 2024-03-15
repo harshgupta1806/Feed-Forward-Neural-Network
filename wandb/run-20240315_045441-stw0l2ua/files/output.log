@@ -1,0 +1,8 @@
+epoch:1 ::
+ Training-loss : 0.3704079552387324, Training-accuracy:86.3537037037037%
+Validation-loss : 0.38443986345254993, Validation-accuracy:85.68333333333334%
+[9 2 1 ... 8 1 5]
+<class 'numpy.ndarray'>
+[9 2 1 ... 8 1 5]
+<class 'numpy.ndarray'>
+Test Accuracy :: 84.78, Test Loss :: 0.4238095685262002

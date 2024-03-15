@@ -33,7 +33,7 @@ parser.add_argument('-sz', '--hidden_size', help ='Number of hidden neurons in a
 parser.add_argument('-a', '--activation', help='choices: ["sigmoid", "tanh", "ReLU", "identity"]', type=str, default='tanh', choices=["identity", "sigmoid", "tanh", "ReLU"])
 parser.add_argument('-p', '--console', help='print training_accuracy + loss, validation_accuracy + loss for every epochs', choices=[0, 1], type=int, default=1)
 parser.add_argument('-wl', '--wandb_log', help='log on wandb', choices=[0, 1], type=int, default=1)
-parser.add_argument('-dc', '--confusion_matrix', help='log confusion matrix on wandb', choices=[0, 1], type=int, default=0)
+parser.add_argument('-cm', '--confusion_matrix', help='log confusion matrix on wandb', choices=[0, 1], type=int, default=0)
 # parser.add_argument('-oc', '--output_size', help ='Number of neurons in output layer used in feedforward neural network.', type = int, default = 10)
 arguments = parser.parse_args()
 wandb.init(project=  arguments.wandb_project, name = arguments.wandb_entity)
