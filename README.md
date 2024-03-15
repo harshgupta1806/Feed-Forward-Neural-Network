@@ -232,4 +232,22 @@ This repository hosts a Python script for training a Feed Forward Neural Network
     -  `choices` : 0, 1 (0 : Disable, 1 : enable)
     -  `default` : 1
 
-  
+  # How to Train a Model
+
+To train a model, run:
+
+```bash
+python train.py --wandb_entity myname --wandb_project myprojectname
+```
+## Requirements
+
+- Python 3.x
+- NumPy
+- Keras
+- scikit-learn
+- Seaborn
+- Matplotlib
+- Wandb (Weights & Biases)
+
+
+
