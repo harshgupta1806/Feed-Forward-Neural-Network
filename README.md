@@ -191,45 +191,45 @@ This repository hosts a Python script for training a Feed Forward Neural Network
 - `-we`, `--wandb_entity`: Wandb Entity used to track experiments in the Weights & Biases dashboard
 -  `-d`, `--dataset`: Choose the dataset for training
     -  `choices` : fashion_mnist, mnist
-    -  `defult` : fashion_mnist
+    -  `default` : fashion_mnist
 - `-e`, `--epochs`: Number of training epochs.
-    -  `defult` : 10
+    -  `default` : 10
 - `-b`, `--batch_size`: Batch size for training.
-    -  `defult` : 32
+    -  `default` : 32
 - `-l`, `--loss`: Loss function for training
     -  `choices` : mean_squared_error, cross_entopy
-    -  `defult` : cross_entropy
+    -  `default` : cross_entropy
 - `-o`, `--optimizer`: Optimization algorithm
     -  `choices` : sgd, momentum, nag, rmsprop, adam, nadam
-    -  `defult` : nadam
+    -  `default` : nadam
 - `-lr`, `--learning_rate`: Learning rate for optimization.
-    -  `defult` : 0.0005
+    -  `default` : 0.0005
 - `-m`: Momentum for Momentum and NAG optimizers.
-    -  `defult` : 0.9
+    -  `default` : 0.9
 - `-beta`, `--beta`: Beta parameter for RMSprop optimizers.
-    -  `defult` : 0.9
+    -  `default` : 0.9
 - `-beta1`, `--beta1`: Beta1 parameter for Adam and Nadam optimizers.
     -  `defult` : 0.9
 - `-beta2`, `--beta2`: Beta2 parameter for Adam and Nadam optimizers.
-    -  `defult` : 0.999
+    -  `default` : 0.999
 - `-w_i`, `--weight_init`: Weight initialization method
     -  `choices` : Xavier, random
-    -  `defult` : Xavier
+    -  `default` : Xavier
 - `-nhl`, `--num_layers`: Number of hidden layers in the neural network.
-    -  `defult` : 3
+    -  `default` : 3
 - `-sz`, `--hidden_size`: Number of neurons in each hidden layer.
-    -  `defult` : 128
+    -  `default` : 128
 - `-a`, `--activation`: Activation function for hidden layers
     -  `choices` : ReLU, tanh, sigmoid, identity
-    -  `defult` : ReLU
+    -  `default` : ReLU
 - `-p`, `--console`: 'print training_accuracy, loss, validation_accuracy, loss for every epochs
     -  `choices` : 0, 1 (0 : Disable, 1 : enable)
-    -  `defult` : 1
+    -  `default` : 1
 - `-wl`, `--wandb_log`: Log training metrics on Weights & Biases
     -  `choices` : 0, 1 (0 : Disable, 1 : enable)
-    -  `defult` : 1
+    -  `default` : 1
 - `-cm`, `--confusion_matrix`: Plot confusion matrix on Weights & Biases
     -  `choices` : 0, 1 (0 : Disable, 1 : enable)
-    -  `defult` : 1
+    -  `default` : 1
 
   
