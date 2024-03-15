@@ -41,7 +41,7 @@ This repository hosts a Python script for training a Feed Forward Neural Network
 
 ### Attributes:
 
-- `default_loss_function`: used **cross_entopy** as defult error function
+- `default_loss_function`: used **cross_entopy** as default error function
 
 ### Methods:
 
@@ -49,7 +49,7 @@ This repository hosts a Python script for training a Feed Forward Neural Network
     - `parameters` : `y_true`, `y_hat`, `loss_function`
     - `return` : return the loss based on loss_function
 - `last_output_derivative`:
-    - `parameter` : `y_true`, `y_hat`, `loss_function`, 'activation_derivative'
+    - `parameter` : `y_true`, `y_hat`, `loss_function`, `activation_derivative`
     - `return` : return loss based on last layer activation function
 
 
@@ -58,7 +58,7 @@ This repository hosts a Python script for training a Feed Forward Neural Network
 ### Attributes:
 
 - `neural_network`: Reference to the neural network object.
-- `Optimizer-specific parameters': `momentum`, `beta`, `beta1`, `beta2`, `epsilon`, `weight_decay`, `optimizer`.
+- `Optimizer-specific parameters`: `momentum`, `beta`, `beta1`, `beta2`, `epsilon`, `weight_decay`, `optimizer`.
 
 ### Methods:
 
@@ -77,7 +77,7 @@ This repository hosts a Python script for training a Feed Forward Neural Network
 - `prv_b` :  Dictionary to store history of gradients wrt to bias of  each layer
 - `grad_w` :  Dictionary to store gradients wrt to weight of each layer
 - `grad_b` :  Dictionary to store gradients wrt to bias of each layer
-- `Neural_Network-specific parameters': `activation_function`, `loss_function`, `initialization`, `hidden_layers`, `hidden_layer_sizes`, `dataset`
+- `Neural_Network-specific parameters`: `activation_function`, `loss_function`, `initialization`, `hidden_layers`, `hidden_layer_sizes`, `dataset`
 - `Objects` : `act : Activation_Functions`, `derivative : Derivatives`, `loss : Loss_Function`
 - `images` : `train_img`, `y_true`, `val_img`, `val_true`, `test_img` , `test_lbl`
 
@@ -153,7 +153,7 @@ This repository hosts a Python script for training a Feed Forward Neural Network
         - Validation Loss
         - Validation Accuracy
 
-## Helper Functions
+# Helper Functions
 
 ### train
 
@@ -176,7 +176,7 @@ This repository hosts a Python script for training a Feed Forward Neural Network
     - `Returns` :
         - plot the graph and log it on wandb dashboard.
 
-## Features
+# Features
 
 - The neural network architecture can be configured flexibly.
 - It offers support for different activation functions like identity, sigmoid, tanh, and ReLU.
@@ -185,7 +185,7 @@ This repository hosts a Python script for training a Feed Forward Neural Network
 - Weight initialization methods include Random and Xavier.
 - Metrics can be visualized using Weights & Biases.
 
-## Parameters
+# Parameters
 
 - `-wp`, `--wandb_project`:Project name used to track experiments in Weights & Biases dashboard
 - `-we`, `--wandb_entity`: Wandb Entity used to track experiments in the Weights & Biases dashboard
@@ -230,7 +230,7 @@ This repository hosts a Python script for training a Feed Forward Neural Network
     -  `default` : 1
 - `-cm`, `--confusion_matrix`: Plot confusion matrix on Weights & Biases
     -  `choices` : 0, 1 (0 : Disable, 1 : enable)
-    -  `default` : 1
+    -  `default` : 0
 
   # How to Train a Model
 
@@ -239,7 +239,7 @@ To train a model, run:
 ```bash
 python train.py --wandb_entity myname --wandb_project myprojectname
 ```
-## Requirements
+# Requirements
 
 - Python 3.x
 - NumPy
