@@ -11,7 +11,7 @@ import warnings
 import argparse
 
 warnings.filterwarnings("ignore")
-wandb.login(key='57566fbb0e091de2e298a4320d872f9a2b200d12')
+# wandb.login(key='57566fbb0e091de2e298a4320d872f9a2b200d12')
 parser = argparse.ArgumentParser()
 parser.add_argument('-wp' , '--wandb_project', help='Project name used to track experiments in Weights & Biases dashboard' , type=str, default='DL_Assignment1')
 parser.add_argument('-we', '--wandb_entity' , help='Wandb Entity used to track experiments in the Weights & Biases dashboard.' , type=str, default='harsh_cs23m026')
@@ -36,8 +36,7 @@ parser.add_argument('-wl', '--wandb_log', help='log on wandb', choices=[0, 1], t
 parser.add_argument('-cm', '--confusion_matrix', help='log confusion matrix on wandb', choices=[0, 1], type=int, default=0)
 # parser.add_argument('-oc', '--output_size', help ='Number of neurons in output layer used in feedforward neural network.', type = int, default = 10)
 arguments = parser.parse_args()
-wandb.init(project=  arguments.wandb_project, name = arguments.wandb_entity)
-
+# wandb.init(project=  arguments.wandb_project, name = arguments.wandb_entity)
 
 #load dataset
 
@@ -79,8 +78,6 @@ class Activation_Functions:
     def tanh(self, x):
         return np.tanh(x)
 
-
-
     def softmax(self, x):
         # Subtract the maximum value along the axis to prevent overflow
         max_x = np.max(x, axis=1, keepdims=True)
@@ -94,8 +91,6 @@ class Activation_Functions:
     def identity(self, x):
         return x
 
-
-
     def activation(self, x, fun):
         if fun == "tanh":
             return self.tanh(x)
@@ -107,6 +102,7 @@ class Activation_Functions:
             return self.softmax(x)
         elif fun == "identity":
             return self.identity(x)
+
 
 class Derivatives:
     def __init__(self) -> None:
@@ -176,6 +172,15 @@ class Derivatives:
         return x
 
     def identity_derivative(self, x):
+        """
+        Computes the derivative of the identity activation function.
+
+        Parameters:
+        - x: Input value
+
+        Returns:
+        - Derivative of the Identity activation function
+        """
         x = 1
         return x
 
@@ -248,10 +253,6 @@ class Loss_Function:
 
 
     def last_output_derivative(self, y_hat,y_true, activation_derivative, loss_function):
-
-        # epsilon = 1e-15
-        #     # Clip the predicted values to avoid log(0) and log(1) scenarios
-        # y_hat = np.clip(y_hat, epsilon, 1. - epsilon)
 
         if(loss_function == "mean_squared_error"):
             # print(y_hat.shape, y_true.shape)
@@ -426,17 +427,19 @@ class Neural_Network:
         self.h = {}       # Dictionary to store activations of each layer
         self.grad_w = {}  # Dictionary to store gradients of weights for each layer
         self.grad_b = {}  # Dictionary to store gradients of biases for each layer
-        self.prv_w = {}   # Dictionary to store previous weights for momentum-based optimization
-        self.prv_b = {}   # Dictionary to store previous biases for momentum-based optimization
+        self.prv_w = {}   # Dictionary to store previous gradients of weights for momentum-based optimization
+        self.prv_b = {}   # Dictionary to store previous gradients of biases for momentum-based optimization
+        self.prv2_w = {}
+        self.prv2_b = {}
+
+
         self.activation_function = PARAM["activation_function"]  # Activation function for hidden layers
         self.loss_function = PARAM["loss_function"]  # Activation function for hidden layers
-        # self.y_true = PARAM["training_output"]  # True labels for training data
         self.initialization = PARAM["init"]
-        # self.input = PARAM["training_input"]     # Input data for training
         self.hidden_layers = PARAM["hidden_layers"]
         self.hidden_layer_sizes = PARAM["hidden_layer_sizes"]
         self.dataset = PARAM["dataset"]
-        # self.size_list = [PARAM["input_size"]] + [self.hidden_layer_sizes for _ in range(self.hidden_layers)] + [PARAM["output_size"]]  # Sizes of all layers
+
         self.act = Activation_Functions()  # Instance of Activation_Functions class
         self.derivative = Derivatives()     # Instance of Derivatives class
         self.loss = Loss_Function()
@@ -448,15 +451,16 @@ class Neural_Network:
         elif self.dataset == 'mnist':
             (train_img, train_lbl), (test_img, test_lbl) = mnist.load_data()
             
-
-        train_image, validation_image, train_label, validation_label = train_test_split(train_img, train_lbl, test_size= 0.1, random_state=41)
-        self.input = input_matrix(train_image)
+        # Split data in train and validation dataset
+        train_image, validation_image, train_label, validation_label = train_test_split(train_img, train_lbl, test_size= 0.1, random_state=41) 
+        
+        self.input = input_matrix(train_image) # Reshape train_image
         self.y_true = train_label
 
-        self.val_img = input_matrix(validation_image)
-        self.val_true = validation_label
+        self.val_img = input_matrix(validation_image) # Reshape validation_image
+        self.val_true = validation_label 
 
-        self.test_img = input_matrix(test_img)
+        self.test_img = input_matrix(test_img) # Reshape test_iimg
         self.test_true = test_lbl
 
         self.size_list = [self.input.shape[1]] + [self.hidden_layer_sizes for _ in range(self.hidden_layers)] + [10]  # Sizes of all layers
@@ -480,7 +484,7 @@ class Neural_Network:
                     self.weight[layer] = np.random.randn(self.size_list[layer-1], self.size_list[layer])  # Initializing weights with random values
                     self.bias[layer] = np.random.randn(1, self.size_list[layer])  # Initializing biases with random values
                     # print("Initialize with random")
-                elif self.initialization == "Xavier":
+                elif self.initialization == "Xavier": # initialization when init is Xavier
                     inpt_w = self.size_list[layer-1]
                     opt_w = self.size_list[layer]
                     inpt_b = 1
@@ -505,7 +509,7 @@ class Neural_Network:
         - Output of the final layer (after applying softmax activation)
         """
         self.h[0] = x  # Input layer
-        for layer in range(1, len(self.size_list)-1):
+        for layer in range(1, len(self.size_list)-1): # from first hidden layer to last hidden layer
             self.a[layer] = np.dot(self.h[layer-1], self.weight[layer]) + self.bias[layer]  # Computing weighted sum of inputs
             self.h[layer] = self.act.activation(self.a[layer], self.activation_function)  # Applying activation function
         self.a[layer+1] = np.dot(self.h[layer], self.weight[layer+1]) + self.bias[layer+1]  # Computing weighted sum for final layer
@@ -583,18 +587,52 @@ class Train_Model:
         self.neural_network =neural_network  # Neural network instance
         self.optimizer = optimizer  # Optimizer instance
         self.loss = Loss_Function()  # Loss function instance
-        self.wan_log = log
-        self.console_log = console
+        self.wan_log = log # signifies either to log values or not 
+        self.console_log = console # signifies either to print accuracy in console or not for every epoch 
 
     def compute_performance(self, data, label):
+        """
+        Computes the performance metrics (loss and accuracy) of the neural network on the given data.
+
+        Parameters:
+        - self: Instance of the class containing the method.
+        - data: Input data for which performance metrics are to be computed.
+        - label: True labels corresponding to the input data.
+
+        Returns:
+        - loss: Computed loss value using the specified loss function.
+        - accuracy: Accuracy percentage achieved by the neural network on the given data.
+        """
+        # Perform forward propagation to obtain predictions
         y_predictions = self.neural_network.forward_propagation(data)
+        
+        # Convert true labels to one-hot encoding for comparison
         labels = self.neural_network.one_hot_matrix(label)
-        accuracy = np.sum(np.argmax(y_predictions, axis=1) == np.argmax(labels, axis = 1))
+        
+        # Compute accuracy by comparing predicted labels with true labels
+        accuracy = np.sum(np.argmax(y_predictions, axis=1) == np.argmax(labels, axis=1))
+        
+        # Compute loss using the specified loss function
         loss = self.loss.compute_loss(labels, y_predictions, self.neural_network.loss_function)
+    
+        # return both loss and accuracy
         return loss, (accuracy/len(data)) * 100
 
     def predict_prob(self, data):
+        """
+        Computes the probabilities of the neural network on the given data.
+
+        Parameters:
+        - self: Instance of the class containing the method.
+        - data: Input data for which performance metrics are to be computed.
+
+        Returns:
+        - probabilities : Predicted probabilities from neural network on given data.
+        """
+        # Perform forward propagation to obtain predictions
         y_predictions = self.neural_network.forward_propagation(data)
+
+        # return prediction
         return y_predictions
 
     def fit_data(self, batch_size, epochs):
@@ -627,17 +665,14 @@ class Train_Model:
 
                 self.optimizer.update(t)  # Updating weights and biases using optimizer
                 t += 1
-                # for img in range(y_hat.shape[0]):
-                #     if np.argmax(y_hat[img]) == np.argmax(res[img]):  # Calculating accuracy
-                #         accuracy += 1
-                # loss += self.loss.compute_loss(res, y_hat, "cross_entropy")  # Calculating loss
-
+            
+            # Compute performance on training data
             t_loss, t_acc = self.compute_performance(self.neural_network.input, self.neural_network.y_true)
+
+            # Compute performance on validation data
             v_loss, v_acc = self.compute_performance(self.neural_network.val_img, self.neural_network.val_true)
 
-            # print(f"epoch:{i+1} :: \n Training-loss : {t_loss}, Training-accuracy:{t_acc}%")    # Printing loss and accuracy for each epoch
-            # print(f"Validation-loss : {v_loss}, Validation-accuracy:{v_acc}%\n\n")    # Printing loss and accuracy for each epoch
-
+            # if we want to log values in wandb dashboard
             if self.wan_log == 1:
                 wandb.log({
                     'epoch' : i+1,
@@ -645,46 +680,108 @@ class Train_Model:
                     'training-accuracy' : t_acc,
                     'validation-loss' : v_loss,
                     'validation-accuracy' : v_acc,
-
                 })
 
+            # if we want to log loss and accuracy in console for every epoch
             if self.console_log == 1:
                 print(f"epoch:{i+1} :: \n Training-loss : {t_loss}, Training-accuracy:{t_acc}%")    # Printing loss and accuracy for each epoch
                 print(f"Validation-loss : {v_loss}, Validation-accuracy:{v_acc}%\n\n")    # Printing loss and accuracy for each epoch
 
-
+        # return training loss, traininig accuracy, validation loss, validation accuracy
         return t_loss, t_acc, v_loss, v_acc
 
 
 def create_confusion_matrix(y_pred, y_true):
+    """
+    Creates a confusion matrix based on the predicted and true labels.
+
+    Parameters:
+    - y_pred: Predicted labels generated by the model.
+    - y_true: True labels corresponding to the input data.
+
+    Returns:
+    - mat: Confusion matrix representing the classification results.
+    """
+    # Initialize an empty confusion matrix with dimensions based on the number of classes
     mat = np.zeros((y_pred.shape[1], y_pred.shape[1]))
-    class_pred = np.argmax(y_pred, axis = 1)
-    print(class_pred)
+    
+    # Obtain the predicted class for each sample
+    class_pred = np.argmax(y_pred, axis=1)
+    
+    # Populate the confusion matrix based on true and predicted labels
     for i in range(y_true.shape[0]):
         mat[y_true[i]][class_pred[i]] += 1
+    
+    # Convert matrix elements to integers for clarity
     mat = mat.astype(int)
-    print(type(mat))
+    
+    # Return the confusion matrix
     return mat
 
+
 def plot_confusion_matrix(dataset):
-    wandb.init(project="DL_Assignment1", name="Question:7")
+    """
+    Plots and logs the confusion matrix for the specified dataset.
+
+    Para:
+    - dataset: String indicating the dataset name ('mnist' or any other).
+
+    Returns:
+    - None
+    """
+    # Initialize Weights & Biases run
+    # wandb.init(project="DL_Assignment1", name="Question:7")
+    
+    # Define class labels based on dataset
     class_label = ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"]
     if dataset == 'mnist':
         class_label = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    
+    # Create confusion matrix
     mat = create_confusion_matrix(y_pred, model.neural_network.test_true)
+    
+    # Convert confusion matrix to DataFrame
     df_confusion = pandas.DataFrame(mat, index=class_label, columns=class_label)
+    
+    # Plot confusion matrix
     plt.figure(figsize=(10, 10))
-    # my_cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["red","yellow"])
-    ax = sns.heatmap(df_confusion, annot=True, fmt='g',linewidths=4, linecolor='white')
-    ax.set_xticklabels(class_label,rotation=90)
-    ax.set_yticklabels(class_label,rotation=0)
+    ax = sns.heatmap(df_confusion, annot=True, fmt='g', linewidths=4, linecolor='white')
+    ax.set_xticklabels(class_label, rotation=90)
+    ax.set_yticklabels(class_label, rotation=0)
     plt.title('Confusion Matrix', fontsize=8)
     plt.ylabel("Predicted Class")
     plt.xlabel("True Class")
-    plt.show()
+   
+    # Log confusion matrix to Weights & Biases
     wandb.log({"Confusion_Matrix": wandb.Image(plt)})
+    plt.show()
+    
+    # Finish Weights & Biases run
     wandb.finish()
 
+config_param = {
+    "hidden_layers": arguments.num_layers,
+    "hidden_layer_sizes" : arguments.hidden_size,
+    "activation": arguments.activation, # sigmoid, tanh, ReLU
+    "loss_function" : arguments.loss, # mean_squared_error, cross_entropy
+    "initialization" : arguments.weight_init, #random, Xavier
+    "dataset" : arguments.dataset,
+    "learning_rate": arguments.learning_rate, #0.0006
+    "optimizer": arguments.optimizer, #sgd, momentum, adam, nadam, rmsprop, nag
+    "beta": arguments.beta,
+    "weight_decay": arguments.weight_decay,
+    "epsilon": arguments.epsilon, #1e-8
+    "beta2" : arguments.beta2,  # 0.9
+    "beta1" : arguments.beta1,
+    "momentum" : arguments.momentum, #0.5,
+    "epochs" : arguments.epochs,
+    "batch_size" : arguments.batch_size
+}
+
+if arguments.wandb_log == 1:
+    wandb.init(config=config_param, project=arguments.wandb_project, entity=arguments.wandb_entity, name=arguments.wandb_entity) 
+
+# Dictionary of parameters using for object of Neural_Network
 PARAM_NEURAL_NETWORK = {
     "hidden_layers": arguments.num_layers,
     "hidden_layer_sizes" : arguments.hidden_size,
@@ -694,6 +791,7 @@ PARAM_NEURAL_NETWORK = {
     "dataset" : arguments.dataset
 }
 
+# Dictionary of parameters using for object of Optimizer
 PARAM_OPTIMIZER = {
     "eta": arguments.learning_rate, #0.0006
     "optimizer": arguments.optimizer, #sgd, momentum, adam, nadam, rmsprop, nag
@@ -705,13 +803,18 @@ PARAM_OPTIMIZER = {
     "momentum" : arguments.momentum #0.5
 }
 
-
+# neural network object
 nn = Neural_Network(PARAM_NEURAL_NETWORK)
+
+# optimizer class
 opt = Optimizer(nn, PARAM_OPTIMIZER)
 
+# object of Train_Model class
 model = Train_Model(nn, opt, log=arguments.wandb_log, console=arguments.console)
+#train_network
 training_loss, training_acc, validation_loss, validation_acc = model.fit_data(batch_size=arguments.batch_size, epochs=arguments.epochs)
-# print(f"Training Accuracy :- {training_acc}, Training Loss :- {training_loss}\nValidation Accuracy :- {validation_acc}, Validation Loss :- {validation_loss}")
+#print accuracy and loss
+print(f"Training Accuracy :- {training_acc}, Training Loss :- {training_loss}\nValidation Accuracy :- {validation_acc}, Validation Loss :- {validation_loss}")
 
 if arguments.confusion_matrix == 1:
     y_pred = model.predict_prob(model.neural_network.test_img)
@@ -721,9 +824,11 @@ if arguments.confusion_matrix == 1:
 
 
 
-
+# compute loss and accuracy on test data and print it
 test_loss, test_acc = model.compute_performance(model.neural_network.test_img, model.neural_network.test_true)
 print(f"Test Accuracy :: {test_acc}, Test Loss :: {test_loss}")
+
+# finish wandb run
 wandb.finish()
 
 
