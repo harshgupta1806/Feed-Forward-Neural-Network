@@ -153,4 +153,83 @@ This repository hosts a Python script for training a Feed Forward Neural Network
         - Validation Loss
         - Validation Accuracy
 
+## Helper Functions
+
+### train
+
+- `train` : Used to run sweeps on wandb
+
+### create_confusion_matrix
+
+- `create_confusion_matrix` : Method to create confusion matrix.
+    - `Parameters` :
+        - y_pred`: Predicted probabilities by Model
+        - `y_true`: true class labels
+    - `Returns` :
+        - `mat` : Confusion Matrix
+     
+### plot_confusion_matrix
+
+- `create_confusion_matrix` : Method to create confusion matrix.
+    - `Parameters` :
+        - dataset`: Dataset name (fashion_mnist/mnist)
+    - `Returns` :
+        - plot the graph and log it on wandb dashboard.
+
+## Features
+
+- The neural network architecture can be configured flexibly.
+- It offers support for different activation functions like identity, sigmoid, tanh, and ReLU.
+- Multiple loss functions (Cross Entropy, Mean Squared Error).
+- Various optimization algorithms such as sgd, momentum, nag, rmsprop, adam, and naadam
+- Weight initialization methods include Random and Xavier.
+- Metrics can be visualized using Weights & Biases.
+
+## Parameters
+
+- `-wp`, `--wandb_project`:Project name used to track experiments in Weights & Biases dashboard
+- `-we`, `--wandb_entity`: Wandb Entity used to track experiments in the Weights & Biases dashboard
+-  `-d`, `--dataset`: Choose the dataset for training
+    -  `choices` : fashion_mnist, mnist
+    -  `defult` : fashion_mnist
+- `-e`, `--epochs`: Number of training epochs.
+    -  `defult` : 10
+- `-b`, `--batch_size`: Batch size for training.
+    -  `defult` : 32
+- `-l`, `--loss`: Loss function for training
+    -  `choices` : mean_squared_error, cross_entopy
+    -  `defult` : cross_entropy
+- `-o`, `--optimizer`: Optimization algorithm
+    -  `choices` : sgd, momentum, nag, rmsprop, adam, nadam
+    -  `defult` : nadam
+- `-lr`, `--learning_rate`: Learning rate for optimization.
+    -  `defult` : 0.0005
+- `-m`: Momentum for Momentum and NAG optimizers.
+    -  `defult` : 0.9
+- `-beta`, `--beta`: Beta parameter for RMSprop optimizers.
+    -  `defult` : 0.9
+- `-beta1`, `--beta1`: Beta1 parameter for Adam and Nadam optimizers.
+    -  `defult` : 0.9
+- `-beta2`, `--beta2`: Beta2 parameter for Adam and Nadam optimizers.
+    -  `defult` : 0.999
+- `-w_i`, `--weight_init`: Weight initialization method
+    -  `choices` : Xavier, random
+    -  `defult` : Xavier
+- `-nhl`, `--num_layers`: Number of hidden layers in the neural network.
+    -  `defult` : 3
+- `-sz`, `--hidden_size`: Number of neurons in each hidden layer.
+    -  `defult` : 128
+- `-a`, `--activation`: Activation function for hidden layers
+    -  `choices` : ReLU, tanh, sigmoid, identity
+    -  `defult` : ReLU
+- `-p`, `--console`: 'print training_accuracy, loss, validation_accuracy, loss for every epochs
+    -  `choices` : 0, 1 (0 : Disable, 1 : enable)
+    -  `defult` : 1
+- `-wl`, `--wandb_log`: Log training metrics on Weights & Biases
+    -  `choices` : 0, 1 (0 : Disable, 1 : enable)
+    -  `defult` : 1
+- `-cm`, `--confusion_matrix`: Plot confusion matrix on Weights & Biases
+    -  `choices` : 0, 1 (0 : Disable, 1 : enable)
+    -  `defult` : 1
+
   
