@@ -14,7 +14,7 @@ warnings.filterwarnings("ignore")
 # wandb.login(key='57566fbb0e091de2e298a4320d872f9a2b200d12')
 parser = argparse.ArgumentParser()
 parser.add_argument('-wp' , '--wandb_project', help='Project name used to track experiments in Weights & Biases dashboard' , type=str, default='DL_Assignment1')
-parser.add_argument('-we', '--wandb_entity' , help='Wandb Entity used to track experiments in the Weights & Biases dashboard.' , type=str, default='harsh_cs23m026')
+parser.add_argument('-we', '--wandb_entity' , help='Wandb Entity used to track experiments in the Weights & Biases dashboard.' , type=str, default='cs23m026')
 parser.add_argument('-d', '--dataset', help='choices: ["mnist", "fashion_mnist"]', type=str, default='fashion_mnist', choices=["mnist", "fashion_mnist"])
 parser.add_argument('-e', '--epochs', help="Number of epochs to train neural network.", type=int, default=10)
 parser.add_argument('-b', '--batch_size', help="Batch size used to train neural network.", type=int, default=32)
@@ -64,12 +64,14 @@ class Activation_Functions:
         # Compute sigmoid element-wise for each element of the matrix
         sigmoid_x = np.zeros_like(x)  # Initialize output matrix with zeros
 
-        # Apply the sigmoid function element-wise using vectorized operations
-        positive_mask = x >= 0
-        sigmoid_x[positive_mask] = 1.0 / (1.0 + np.exp(-x[positive_mask]))
-        sigmoid_x[~positive_mask] = np.exp(x[~positive_mask]) / (1.0 + np.exp(x[~positive_mask]))
+        # Apply the sigmoid function element-wise
+        positive = x >= 0
+        negetive = ~positive
+        sigmoid_x[positive] = 1.0 / (1.0 + np.exp(-x[positive]))
+        sigmoid_x[negetive] = np.exp(x[negetive]) / (1.0 + np.exp(x[negetive]))
 
         return sigmoid_x
+
 
 
     def ReLU(self, x):
@@ -236,10 +238,10 @@ class Loss_Function:
             loss_function = self.default_loss_function
 
         if loss_function == "cross_entropy":
-            # Set a small value epsilon to avoid numerical instability
-            epsilon = 1e-15
-            # Clip the predicted values to avoid log(0) and log(1) scenarios
-            y_hat = np.clip(y_hat, epsilon, 1. - epsilon)
+            # Set a small value of flag to avoid wrong values in log functions
+            flag = 1e-15
+            
+            y_hat = np.clip(y_hat, flag, 1. - flag) # Clip the predicted values to avoid log(0) and log(1) 
             # Compute the cross-entropy loss for each sample
             loss = -np.sum(y_true * np.log(y_hat), axis=1)
             # Compute the mean loss across all samples
