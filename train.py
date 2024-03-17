@@ -755,7 +755,8 @@ def plot_confusion_matrix(dataset):
     plt.xlabel("True Class")
    
     # Log confusion matrix to Weights & Biases
-    wandb.log({"Confusion_Matrix": wandb.Image(plt)})
+    if arguments.wandb_log == 1:
+        wandb.log({"Confusion_Matrix": wandb.Image(plt)})
     plt.show()
     
     # Finish Weights & Biases run
